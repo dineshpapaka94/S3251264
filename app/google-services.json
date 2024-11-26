@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1056322657134",
+    "project_id": "galleryview-f74f1",
+    "storage_bucket": "galleryview-f74f1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1056322657134:android:20603600a435296ff47f7f",
+        "android_client_info": {
+          "package_name": "uk.ac.tees.mad.galleryview"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDC_6ArP05cG4HQrx1hb6vaD0w3utEkuFA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

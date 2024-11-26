@@ -11,6 +11,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import uk.ac.tees.mad.galleryview.presentation.SplashScreen
+import uk.ac.tees.mad.galleryview.ui.navigation.Screen
 import uk.ac.tees.mad.galleryview.ui.theme.GalleryViewTheme
 
 class MainActivity : ComponentActivity() {
@@ -28,4 +33,23 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun GalleryViewNavigation() {
     val navController = rememberNavController()
+    NavHost(navController = navController, startDestination = Screen.SplashScreen.route) {
+        composable(Screen.SplashScreen.route) {
+            SplashScreen(navController = navController)
+        }
+        composable(Screen.AuthScreen.route) {
+        }
+        composable(Screen.ProfileScreen.route) {
+        }
+        composable(Screen.EditProfileScreen.route) {
+        }
+        composable(Screen.ClickPictureScreen.route) {
+        }
+        composable(Screen.GalleryViewScreen.route) {
+        }
+        composable(Screen.PhotoDetailViewScreen.route) {
+        }
+        composable(Screen.SavedPhotoScreen.route) {
+        }
+    }
 }
