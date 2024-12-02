@@ -3,6 +3,7 @@ package uk.ac.tees.mad.galleryview.presentation.auth
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -13,6 +14,7 @@ class AuthViewModel : ViewModel() {
     val authState: StateFlow<AuthState> = _authState
 
     private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
+    private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
 
     fun signIn(email: String, password: String) {
         _authState.value = AuthState.Loading
@@ -28,13 +30,27 @@ class AuthViewModel : ViewModel() {
         }
     }
 
-    fun signUp(email: String, password: String) {
+    fun signUp(name: String, email: String, password: String) {
         _authState.value = AuthState.Loading
         viewModelScope.launch {
             firebaseAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
-                        _authState.value = AuthState.Success
+                        val userId = firebaseAuth.currentUser?.uid
+                        if (userId != null) {
+                            val user = hashMapOf(
+                                "name" to name,
+                                "email" to email
+                            )
+                            firestore.collection("users").document(userId)
+                                .set(user)
+                                .addOnSuccessListener {
+                                    _authState.value = AuthState.Success
+                                }
+                                .addOnFailureListener {
+                                    _authState.value = AuthState.Error(it.message ?: "Firestore error")
+                                }
+                        }
                     } else {
                         _authState.value = AuthState.Error(task.exception?.message ?: "Unknown error")
                     }

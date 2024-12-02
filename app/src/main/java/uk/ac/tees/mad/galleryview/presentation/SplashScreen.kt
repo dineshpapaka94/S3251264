@@ -21,7 +21,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import uk.ac.tees.mad.galleryview.R
-import uk.ac.tees.mad.galleryview.ui.navigation.Screen
+import uk.ac.tees.mad.galleryview.Screen
 
 @Composable
 fun SplashScreen(navController: NavController) {

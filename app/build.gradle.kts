@@ -80,6 +80,9 @@ dependencies {
     // Other dependencies
     implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
 
+    //Image picker
+    implementation ("com.github.Drjacky:ImagePicker:2.3.22")
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
