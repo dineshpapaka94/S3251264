@@ -10,6 +10,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import uk.ac.tees.mad.galleryview.presentation.SplashScreen
 import uk.ac.tees.mad.galleryview.presentation.auth.AuthScreen
+import uk.ac.tees.mad.galleryview.presentation.profile.ProfileScreen
 import uk.ac.tees.mad.galleryview.ui.theme.GalleryViewTheme
 
 class MainActivity : ComponentActivity() {
@@ -35,6 +36,7 @@ fun GalleryViewNavigation() {
             AuthScreen(navController = navController)
         }
         composable(Screen.ProfileScreen.route) {
+            ProfileScreen(navController = navController)
         }
         composable(Screen.EditProfileScreen.route) {
         }
@@ -43,8 +45,6 @@ fun GalleryViewNavigation() {
         composable(Screen.GalleryViewScreen.route) {
         }
         composable(Screen.PhotoDetailViewScreen.route) {
-        }
-        composable(Screen.SavedPhotoScreen.route) {
         }
     }
 }
