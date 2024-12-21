@@ -18,6 +18,7 @@ import coil.compose.rememberAsyncImagePainter
 import coil.compose.rememberImagePainter
 import uk.ac.tees.mad.galleryview.R
 import uk.ac.tees.mad.galleryview.Screen
+import uk.ac.tees.mad.galleryview.presentation.auth.AuthState
 import uk.ac.tees.mad.galleryview.ui.theme.ErrorColor
 import uk.ac.tees.mad.galleryview.ui.theme.PrimaryColor
 
@@ -28,8 +29,12 @@ fun ProfileScreen(
     viewModel: ProfileViewModel = viewModel()
 ) {
     val userState by viewModel.userState.collectAsState()
-
-    Scaffold(
+    val snackbarHostState = remember {
+        SnackbarHostState()
+    }
+    Scaffold( snackbarHost = {
+        SnackbarHost(snackbarHostState)
+    },
         topBar = {
             TopAppBar(
                 title = { Text("Profile", fontWeight = FontWeight.Bold) },
@@ -75,11 +80,12 @@ fun ProfileScreen(
                     }
 
                     is UserState.Error -> {
-                        Text(
-                            (userState as UserState.Error).message,
-                            color = MaterialTheme.colorScheme.error,
-                            modifier = Modifier.align(Alignment.Center)
-                        )
+                        LaunchedEffect(Unit) {
+                            snackbarHostState.showSnackbar(
+                                (userState as UserState.Error).message,
+                                actionLabel = "Dismiss"
+                            )
+                        }
                     }
                 }
             }
