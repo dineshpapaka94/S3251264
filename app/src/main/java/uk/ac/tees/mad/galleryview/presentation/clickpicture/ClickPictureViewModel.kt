@@ -57,4 +57,28 @@ class ClickPictureViewModel : ViewModel() {
                 it.printStackTrace()
             }
     }
+
+    // Fetch the device's current location
+    @SuppressLint("MissingPermission")
+    fun fetchLocation(context: Context, onLocationFetched: (String) -> Unit) {
+        val fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context)
+        val locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 1000L)
+            .setWaitForAccurateLocation(true)
+            .setMinUpdateIntervalMillis(5000L)
+            .build()
+
+        val locationCallback = object : LocationCallback() {
+            override fun onLocationResult(locationResult: LocationResult) {
+                val location = locationResult.lastLocation
+                val locationString = "${location?.latitude}, ${location?.longitude}"
+                onLocationFetched(locationString)
+            }
+        }
+
+        fusedLocationProviderClient.requestLocationUpdates(
+            locationRequest,
+            locationCallback,
+            Looper.getMainLooper()
+        )
+    }
 }
