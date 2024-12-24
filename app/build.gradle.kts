@@ -84,7 +84,15 @@ dependencies {
     implementation("com.github.Drjacky:ImagePicker:2.3.22")
 
     //Accompanist permission
-    implementation ("com.google.accompanist:accompanist-permissions:0.31.0-alpha")
+    implementation("com.google.accompanist:accompanist-permissions:0.31.0-alpha")
+
+    // CameraX
+    implementation ("androidx.camera:camera-core:1.3.4")
+    implementation ("androidx.camera:camera-lifecycle:1.3.4")
+    implementation ("androidx.camera:camera-view:1.3.4")
+
+    // For location services
+    implementation ("com.google.android.gms:play-services-location:21.3.0")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

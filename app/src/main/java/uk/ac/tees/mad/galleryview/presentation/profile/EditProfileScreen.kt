@@ -24,8 +24,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import coil.compose.rememberAsyncImagePainter
 import coil.compose.rememberImagePainter
 import com.github.drjacky.imagepicker.ImagePicker
 import com.github.drjacky.imagepicker.constant.ImageProvider
@@ -51,6 +53,7 @@ fun EditProfileScreen(
     var imageUri by remember { mutableStateOf<Uri?>(null) }
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
+    var showImagePickerDialog by remember { mutableStateOf(false) }
     val storage = FirebaseStorage.getInstance()
     val snackbarHostState = remember {
         SnackbarHostState()
@@ -74,20 +77,23 @@ fun EditProfileScreen(
             }
         }
     }
-    val intent = ImagePicker.with(context as ComponentActivity)
-        .provider(ImageProvider.BOTH) // Both Camera and Gallery
+    val cameraIntent = ImagePicker.with(context as ComponentActivity)
+        .provider(ImageProvider.CAMERA)
+        .createIntent()
+    val galleryIntent = ImagePicker.with(context as ComponentActivity)
+        .provider(ImageProvider.GALLERY)
         .createIntent()
 
     val permissionState = rememberPermissionState(
         android.Manifest.permission.CAMERA
     ) {
         if (it) {
-            imagePickerLauncher.launch(intent)
+            imagePickerLauncher.launch(cameraIntent)
         }
     }
 
 
-    Scaffold( snackbarHost = {
+    Scaffold(snackbarHost = {
         SnackbarHost(snackbarHostState)
     },
         topBar = {
@@ -124,12 +130,7 @@ fun EditProfileScreen(
                             profilePictureUrl = profilePictureUrl,
                             onNameChange = { name = it },
                             onPickImageClick = {
-                                if (permissionState.status.isGranted) {
-                                    imagePickerLauncher.launch(intent)
-                                } else {
-                                    permissionState.launchPermissionRequest()
-                                }
-
+                                showImagePickerDialog = true
                             },
                             onSaveClick = {
                                 coroutineScope.launch {
@@ -152,6 +153,52 @@ fun EditProfileScreen(
             }
         }
     )
+    if (showImagePickerDialog) {
+        Dialog(onDismissRequest = { showImagePickerDialog = false }) {
+            Surface(
+                shape = RoundedCornerShape(16.dp),
+                color = MaterialTheme.colorScheme.surface
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text("Select Image From", style = MaterialTheme.typography.headlineSmall)
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Button(
+                        onClick = {
+                            showImagePickerDialog = false
+                            if (permissionState.status.isGranted) {
+                                imagePickerLauncher.launch(cameraIntent)
+
+                            } else {
+                                permissionState.launchPermissionRequest()
+                            }
+
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("Camera")
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Button(
+                        onClick = {
+                            showImagePickerDialog = false
+                            imagePickerLauncher.launch(galleryIntent)
+
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("Gallery")
+                    }
+                }
+            }
+        }
+    }
 }
 
 @Composable
@@ -173,7 +220,7 @@ fun EditProfileContent(
             painter = if (profilePictureUrl.isEmpty()) {
                 painterResource(id = R.drawable.placeholder)
             } else {
-                rememberImagePainter(data = profilePictureUrl)
+                rememberAsyncImagePainter(model = profilePictureUrl)
             },
             contentDescription = "Profile Picture",
             modifier = Modifier
@@ -191,7 +238,6 @@ fun EditProfileContent(
             label = { Text("Name") },
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(12.dp))
                 .background(Color.White)
         )
 

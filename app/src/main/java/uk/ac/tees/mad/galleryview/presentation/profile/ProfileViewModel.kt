@@ -21,7 +21,7 @@ class ProfileViewModel : ViewModel() {
         fetchUserData()
     }
 
-    private fun fetchUserData() {
+     fun fetchUserData() {
         if (userId != null) {
             firestore.collection("users").document(userId).get()
                 .addOnSuccessListener { document ->
