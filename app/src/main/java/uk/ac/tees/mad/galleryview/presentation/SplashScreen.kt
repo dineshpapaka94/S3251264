@@ -42,7 +42,7 @@ fun SplashScreen(navController: NavController) {
         startAnimation = true
         delay(2500)
         launch(Dispatchers.Main) {
-            navController.navigate(if (FirebaseAuth.getInstance().currentUser != null) Screen.ProfileScreen.route else Screen.AuthScreen.route) {
+            navController.navigate(if (FirebaseAuth.getInstance().currentUser != null) Screen.GalleryViewScreen.route else Screen.AuthScreen.route) {
                 popUpTo(Screen.SplashScreen.route) { inclusive = true }
             }
         }

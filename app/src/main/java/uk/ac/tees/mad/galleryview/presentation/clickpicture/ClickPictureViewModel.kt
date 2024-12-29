@@ -2,6 +2,9 @@ package uk.ac.tees.mad.galleryview.presentation.clickpicture
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.location.Address
+import android.location.Geocoder
+import android.location.Location
 import android.net.Uri
 import android.os.Looper
 import androidx.camera.core.CameraSelector
@@ -17,6 +20,7 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.Dispatchers
@@ -32,18 +36,19 @@ class ClickPictureViewModel : ViewModel() {
 
     private val firestore = FirebaseFirestore.getInstance()
     private val storage = FirebaseStorage.getInstance()
+    private val userId = FirebaseAuth.getInstance().currentUser?.uid
 
     // Function to set up the camera
     fun startCamera(
         context: Context,
         imageCapture: ImageCapture,
-        lifecycleOwner: LifecycleOwner
+        lifecycleOwner: LifecycleOwner,
+        previewView: PreviewView
     ) = viewModelScope.launch(Dispatchers.Main) {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
         val cameraProvider = withContext(Dispatchers.IO) {
             cameraProviderFuture.get()
         }
-        val previewView = PreviewView(context)
 
         val preview = androidx.camera.core.Preview.Builder().build().also {
             it.setSurfaceProvider(previewView.surfaceProvider)
@@ -90,18 +95,17 @@ class ClickPictureViewModel : ViewModel() {
                 override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
                     val savedUri = Uri.fromFile(file)
                     onPhotoCaptured(savedUri)
-                    uploadImageToFirebase(savedUri)
                 }
             }
         )
     }
 
-    private fun uploadImageToFirebase(imageUri: Uri) {
+    fun uploadImageToFirebase(imageUri: Uri, tags: String, description: String, location: String) {
         val storageRef = storage.reference.child("images/${UUID.randomUUID()}.jpg")
         storageRef.putFile(imageUri)
             .addOnSuccessListener { taskSnapshot ->
                 storageRef.downloadUrl.addOnSuccessListener { downloadUrl ->
-                    saveImageInfoToFirestore(downloadUrl.toString())
+                    saveImageInfoToFirestore(downloadUrl.toString(), tags, description, location)
                 }
             }
             .addOnFailureListener {
@@ -109,12 +113,18 @@ class ClickPictureViewModel : ViewModel() {
             }
     }
 
-    private fun saveImageInfoToFirestore(imageUrl: String) {
+    private fun saveImageInfoToFirestore(
+        imageUrl: String,
+        tags: String,
+        description: String,
+        location: String
+    ) {
         val metadata = hashMapOf(
             "imageUrl" to imageUrl,
             "timestamp" to System.currentTimeMillis(),
-            "tags" to emptyList<String>(),
-            "description" to ""
+            "tags" to tags.split(",").map { it.trim() }, // Split tags into a list
+            "description" to description,
+            "userId" to userId
         )
         firestore.collection("images")
             .add(metadata)
@@ -137,9 +147,11 @@ class ClickPictureViewModel : ViewModel() {
 
         val locationCallback = object : LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult) {
-                val location = locationResult.lastLocation
-                val locationString = "${location?.latitude}, ${location?.longitude}"
-                onLocationFetched(locationString)
+                locationResult.lastLocation.also {
+                    if (it != null) {
+                        onLocationFetched(getAddressFromCoordinate(context, it))
+                    }
+                }
             }
         }
 
@@ -148,5 +160,24 @@ class ClickPictureViewModel : ViewModel() {
             locationCallback,
             Looper.getMainLooper()
         )
+    }
+
+    fun getAddressFromCoordinate(context: Context, latLng: Location): String {
+        val geocoder = Geocoder(context, Locale.getDefault())
+        val address: Address?
+        var addressText = ""
+
+        val addresses: List<Address>? =
+            geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1)
+
+        if (!addresses.isNullOrEmpty()) {
+            address = addresses[0]
+            addressText = address.getAddressLine(0)
+        } else {
+            addressText = "Try manually"
+        }
+        return addressText
+
+
     }
 }

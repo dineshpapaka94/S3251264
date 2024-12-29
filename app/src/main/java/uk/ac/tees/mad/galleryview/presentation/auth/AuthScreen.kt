@@ -153,7 +153,7 @@ fun AuthScreen(
 
                 is AuthState.Success -> {
                     LaunchedEffect(Unit) {
-                        navController.navigate(Screen.ProfileScreen.route) {
+                        navController.navigate(Screen.GalleryViewScreen.route) {
                             popUpTo(Screen.AuthScreen.route) { inclusive = true }
                         }
                     }
