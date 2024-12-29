@@ -62,6 +62,7 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation("androidx.navigation:navigation-compose:2.7.7")
+    implementation("androidx.compose.material:material-icons-extended:1.6.8")
 
     // Firebase
     implementation(platform("com.google.firebase:firebase-bom:33.2.0"))
@@ -87,12 +88,14 @@ dependencies {
     implementation("com.google.accompanist:accompanist-permissions:0.31.0-alpha")
 
     // CameraX
-    implementation ("androidx.camera:camera-core:1.3.4")
-    implementation ("androidx.camera:camera-lifecycle:1.3.4")
-    implementation ("androidx.camera:camera-view:1.3.4")
+    implementation("com.google.guava:guava:31.1-android")
+    implementation("androidx.camera:camera-core:1.2.0")
+    implementation("androidx.camera:camera-camera2:1.2.0")
+    implementation("androidx.camera:camera-lifecycle:1.2.0")
+    implementation("androidx.camera:camera-view:1.2.0")
 
     // For location services
-    implementation ("com.google.android.gms:play-services-location:21.3.0")
+    implementation("com.google.android.gms:play-services-location:21.3.0")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
