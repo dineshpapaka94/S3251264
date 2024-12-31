@@ -5,7 +5,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Camera
 import androidx.compose.material.icons.filled.CameraAlt
+import androidx.compose.material.icons.filled.Person2
 import androidx.compose.material.icons.filled.PersonPin
+import androidx.compose.material.icons.rounded.Person3
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -32,7 +34,7 @@ fun GalleryScreen(
                 title = { Text(text = stringResource(id = R.string.app_name)) },
                 actions = {
                     IconButton(onClick = { navController.navigate(Screen.ProfileScreen.route) }) {
-                        Icon(Icons.Default.PersonPin, contentDescription = "profile")
+                        Icon(Icons.Rounded.Person3, contentDescription = "profile")
                     }
                 }
             )
@@ -52,3 +54,4 @@ fun GalleryScreen(
 
     }
 }
+
