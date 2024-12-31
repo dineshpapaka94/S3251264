@@ -124,7 +124,8 @@ class ClickPictureViewModel : ViewModel() {
             "timestamp" to System.currentTimeMillis(),
             "tags" to tags.split(",").map { it.trim() }, // Split tags into a list
             "description" to description,
-            "userId" to userId
+            "userId" to userId,
+            "location" to location
         )
         firestore.collection("images")
             .add(metadata)
